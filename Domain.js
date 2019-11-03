@@ -9,10 +9,6 @@ class Customer extends DomainModel {
   getName() {
     return this.name;
   }
-
-  static commit(session) {
-    DomainModel.commit(session, Customer);
-  }
 }
 
 module.exports = {

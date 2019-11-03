@@ -1,9 +1,8 @@
-const { Session } = require('./Session');
-const UnitOfWork = require('./UnitOfWork');
+const { SessionUnit } = require('./Session');
 
 /**
  * Pattern command intended to provide single interface to run.
- * Also it enforce pass argumants as single object that allow serialize it
+ * Also it enforce passing arguments as single object that allow serialize it
  */
 class Command {
   /**
@@ -16,9 +15,7 @@ class Command {
   }
 
   startSession() {
-    return new Session(
-      new UnitOfWork()
-    );
+    return new SessionUnit();
   }
 }
 

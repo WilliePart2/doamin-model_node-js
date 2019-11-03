@@ -6,46 +6,42 @@ const { Registry } = require('./Metadata');
  */
 class UnitOfWork {
   constructor() {
-    this.dirty = [];
-    this.created = [];
-    this.deleted = [];
-  }
-
-  _isExists(list, target) {
-    return list.some(listObj => listObj === target);
+    this.dirty = new Set();
+    this.created = new Set();
+    this.deleted = new Set();
   }
 
   setDirty(obj) {
-    if (this._isExists(this.created, obj) || this._isExists(this.deleted, obj)) {
+    if (this.created.has(obj) || this.deleted.has(obj)) {
       console.warn('You try to set data on removed object');
       return;
     }
 
-    this.dirty.push(obj);
+    this.dirty.add(obj);
   }
 
   setCreated(obj) {
-    this.created.push(obj);
+    this.created.add(obj);
   }
 
   setRemoved(obj) {
-    this.dirty = this.dirty.filter(dirtyObj => dirtyObj !== obj);
-    this.created = this.created.filter(createdObj => createdObj !== obj);
+    this.dirty.delete(obj);
+    this.created.delete(obj);
 
-    this.deleted.push(obj);
+    this.deleted.add(obj);
   }
 
   commit(targetClass) {
     const mapper = Registry.getMapper(targetClass);
-    if (this.dirty.length) {
+    if (this.dirty.size) {
       mapper.update(this.dirty);
     }
 
-    if (this.created.length) {
+    if (this.created.size) {
       mapper.insert(this.created);
     }
 
-    if (this.deleted.length) {
+    if (this.deleted.size) {
       mapper.delete(this.deleted);
     }
   }
